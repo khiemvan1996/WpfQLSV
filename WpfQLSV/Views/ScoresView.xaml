@@ -1,0 +1,10 @@
+﻿<UserControl x:Class="WpfQLSV.Views.ScoresView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:WpfQLSV.Views"
+             Height="Auto" Width="Auto">
+    <Grid>
+        <!-- Giao diện của ClassesView -->
+        <TextBlock Text="Đây là trang quản lý Điểm số" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
+    </Grid>
+</UserControl>

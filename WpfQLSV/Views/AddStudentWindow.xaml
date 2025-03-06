@@ -1,0 +1,52 @@
+﻿<Window x:Class="WpfQLSV.Views.AddStudentWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Thêm Sinh Viên" Height="353" Width="429" ResizeMode="NoResize">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <!-- Đẩy phần nút xuống cuối -->
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Họ và Tên:" Grid.Row="0" Margin="5" FontSize="14"/>
+        <TextBox Grid.Row="1" Margin="5" Height="30"
+                 Text="{Binding StudentName, Mode=TwoWay}" FontSize="14"/>
+
+        <TextBlock Text="Lớp:" Grid.Row="2" Margin="5" FontSize="14"/>
+        <ComboBox Grid.Row="3" Margin="5" Height="30"
+                  ItemsSource="{Binding ClassList}" 
+                  SelectedItem="{Binding SelectedClass, Mode=TwoWay}" 
+                  DisplayMemberPath="ClassName"/>
+
+        <TextBlock Text="Ngày Sinh:" Grid.Row="4" Margin="5" FontSize="14"/>
+        <DatePicker Grid.Row="5" Margin="5" Height="30"
+                    SelectedDate="{Binding DateOfBirth, Mode=TwoWay}"/>
+
+        <!-- Phần chứa nút Lưu & Hủy -->
+        <Grid Grid.Row="6" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="10"/>
+                <!-- Khoảng cách giữa 2 nút -->
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <Button Content="💾 Lưu" Grid.Column="0" Width="100" Height="35"
+                    Command="{Binding SaveCommand}"
+                    Background="#4CAF50" Foreground="White" FontSize="14"
+                    HorizontalAlignment="Right"/>
+
+            <Button Content="❌ Hủy" Grid.Column="2" Width="100" Height="35"
+                    Command="{Binding CancelCommand}"
+                    Background="#F44336" Foreground="White" FontSize="14"
+                    HorizontalAlignment="Left"/>
+        </Grid>
+    </Grid>
+</Window>
