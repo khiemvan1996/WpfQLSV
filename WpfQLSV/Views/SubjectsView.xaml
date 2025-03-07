@@ -1,10 +1,14 @@
 ﻿<UserControl x:Class="WpfQLSV.Views.SubjectsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:WpfQLSV.Views"
-             Height="Auto" Width="Auto">
-    <Grid>
-        <!-- Giao diện của SubjectsView -->
-        <TextBlock Text="Đây là trang quản lý môn học" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
-    </Grid>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Grid>
+		<DataGrid x:Name="SubjectsDataGrid" AutoGenerateColumns="False" ItemsSource="{Binding Subjects}">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="ID Môn Học" Binding="{Binding Id}" IsReadOnly="True" Width="100"/>
+				<DataGridTextColumn Header="Tên Môn Học" Binding="{Binding SubjectName}" IsReadOnly="True" Width="200"/>
+				<DataGridTextColumn Header="Số Sinh Viên Đăng Ký" Binding="{Binding TotalStudents}" IsReadOnly="True" Width="150"/>
+				<DataGridTextColumn Header="Số Tín Chỉ" Binding="{Binding Credit}" IsReadOnly="True" Width="150"/>
+			</DataGrid.Columns>
+		</DataGrid>
+	</Grid>
 </UserControl>

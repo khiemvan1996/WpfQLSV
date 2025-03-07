@@ -3,8 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using WpfQLSV.Data;
-using WpfQLSV.Model;
+using WpfQLSV.Models;
 namespace WpfQLSV.ViewModels;
 public partial class EditStudentViewModel : ObservableObject
 {
@@ -30,7 +29,10 @@ public partial class EditStudentViewModel : ObservableObject
         studentToEdit = student;
         StudentName = student.FullName;
         DateOfBirth = student.DateOfBirth;
-        LoadClasses();
+
+        LoadClasses(); // Load danh sách lớp
+
+        // Sử dụng IdClassNavigation để lấy lớp học hiện tại của sinh viên
         SelectedClass = ClassList.FirstOrDefault(c => c.Id == student.IdClass);
 
         SaveCommand = new RelayCommand(Save);
@@ -39,7 +41,7 @@ public partial class EditStudentViewModel : ObservableObject
 
     private void LoadClasses()
     {
-        using (var context = new AppDbContext())
+        using (var context = new StudentMngContext())
         {
             var classes = context.Classes.ToList();
             ClassList = new ObservableCollection<Class>(classes);
@@ -48,7 +50,7 @@ public partial class EditStudentViewModel : ObservableObject
 
     private void Save()
     {
-        using (var context = new AppDbContext())
+        using (var context = new StudentMngContext())
         {
             var student = context.Students.Find(studentToEdit.Id);
             if (student != null)

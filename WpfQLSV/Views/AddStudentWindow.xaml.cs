@@ -4,7 +4,7 @@ namespace WpfQLSV.Views
 {
     public partial class AddStudentWindow : Window
     {
-        private StudentsViewModel _studentsViewModel;
+        //private StudentsViewModel _studentsViewModel;
 
         public AddStudentWindow(StudentsViewModel studentsViewModel)
         {

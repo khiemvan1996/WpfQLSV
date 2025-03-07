@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using WpfQLSV.Model;
+using WpfQLSV.Models;
 using WpfQLSV.ViewModels;
 
 namespace WpfQLSV.Views

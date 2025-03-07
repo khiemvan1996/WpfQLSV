@@ -4,8 +4,9 @@ using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using WpfQLSV.Data;
-using WpfQLSV.Model;
+using WpfQLSV.Models;
+
+//using WpfQLSV.Model;
 using WpfQLSV.ViewModels;
 using WpfQLSV.Views;
 
@@ -16,10 +17,10 @@ namespace WpfQLSV.ViewModels
         private readonly StudentsViewModel _studentsViewModel;
 
         [ObservableProperty]
-        private ObservableCollection<Class> classList; // Danh sách lớp
+        private ObservableCollection<Class> classList;
 
         [ObservableProperty]
-        private Class selectedClass; // Lớp được chọn
+        private Class selectedClass;
 
         [ObservableProperty]
         private string studentName; // Tên sinh viên
@@ -33,7 +34,7 @@ namespace WpfQLSV.ViewModels
         public AddStudentViewModel(StudentsViewModel studentsViewModel)
         {
             _studentsViewModel = studentsViewModel;
-            ClassList = new ObservableCollection<Class>();
+            //ClassList = new ObservableCollection<Class>();
             LoadClasses();
 
             SaveCommand = new RelayCommand(SaveStudent);
@@ -42,7 +43,7 @@ namespace WpfQLSV.ViewModels
 
         private void LoadClasses()
         {
-            using (var context = new AppDbContext())
+            using (var context = new StudentMngContext())
             {
                 var classes = context.Classes.ToList();
                 if (classes.Any())
@@ -61,7 +62,7 @@ namespace WpfQLSV.ViewModels
                 return;
             }
 
-            using (var context = new AppDbContext())
+            using (var context = new StudentMngContext())
             {
                 var newStudent = new Student
                 {

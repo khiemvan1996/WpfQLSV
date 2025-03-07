@@ -2,14 +2,13 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using WpfQLSV.Data;
-using WpfQLSV.Model;
 using WpfQLSV.Views;
 using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Linq;
 using WpfQLSV.Services;
 using ClosedXML.Excel;
+using WpfQLSV.Models;
 
 public partial class StudentsViewModel : ObservableObject
 {
@@ -26,7 +25,7 @@ public partial class StudentsViewModel : ObservableObject
     private string searchText;
 
     [ObservableProperty]
-    private Student selectedStudent; // Thuộc tính để lưu sinh viên được chọn
+    private Student selectedStudent;
 
     public ICommand AddStudentCommand { get; }
     public ICommand SearchCommand { get; }
@@ -34,7 +33,6 @@ public partial class StudentsViewModel : ObservableObject
     public ICommand EditStudentCommand { get; }
     public ICommand ImportFromExcelCommand { get; }
     public ICommand ExportToExcelCommand { get; }
-
 
     public StudentsViewModel(IFileDialogService fileDialogService, IMessageService messageService)
     {
@@ -62,20 +60,20 @@ public partial class StudentsViewModel : ObservableObject
                 using (var workbook = new XLWorkbook(filePath))
                 {
                     var worksheet = workbook.Worksheet(1);
-                    var rows = worksheet.RowsUsed().Skip(1);
+                    var rows = worksheet.RowsUsed().Skip(1); // Bỏ qua hàng tiêu đề
 
-                    using (var context = new AppDbContext())
+                    using (var context = new StudentMngContext())
                     {
                         foreach (var row in rows)
                         {
-                            var student = new Student
+                            var score = new Score
                             {
-                                FullName = row.Cell(1).GetValue<string>(),
-                                DateOfBirth = row.Cell(2).GetValue<DateTime>(),
-                                IdClass = row.Cell(3).GetValue<int>()
+                                StudentId = row.Cell(1).GetValue<int>(),
+                                SubjectId = row.Cell(2).GetValue<int>(),
+
                             };
 
-                            context.Students.Add(student);
+                            context.Scores.Add(score);
                         }
 
                         context.SaveChanges();
@@ -90,7 +88,7 @@ public partial class StudentsViewModel : ObservableObject
         {
             _messageService.ShowError($"Lỗi khi nhập dữ liệu từ Excel: {ex.Message}", "Lỗi");
         }
-    }
+    }// done
     private void ExportToExcel()
     {
         try
@@ -128,17 +126,22 @@ public partial class StudentsViewModel : ObservableObject
         {
             _messageService.ShowError($"Lỗi khi xuất dữ liệu ra Excel: {ex.Message}", "Lỗi");
         }
-    }
+    }// done
 
     public void LoadStudents()
     {
-        using (var context = new AppDbContext())
+        using (var context = new StudentMngContext())
         {
-            var studentList = context.Students.Include(s => s.Class).ToList();
+            var studentList = context.Students
+                .Include(s => s.IdClassNavigation)  // Sửa ở đây
+                .Include(s => s.Scores)
+                .ThenInclude(sc => sc.Subject)
+                .ToList();
+
             Students = new ObservableCollection<Student>(studentList);
             FilteredStudents = new ObservableCollection<Student>(studentList);
         }
-    }
+    } //done
 
     private void OpenAddStudentWindow()
     {
@@ -158,9 +161,9 @@ public partial class StudentsViewModel : ObservableObject
             var filtered = Students.Where(s => s.FullName.ToLower().Contains(searchTextLower)).ToList();
             FilteredStudents = new ObservableCollection<Student>(filtered);
         }
-    }
+    } //done
 
-    private void DeleteStudent()
+    private void DeleteStudent()//done
     {
         if (SelectedStudent != null)
         {
@@ -172,7 +175,7 @@ public partial class StudentsViewModel : ObservableObject
             // Xóa sinh viên khỏi cơ sở dữ liệu
             if (result == MessageBoxResult.Yes)
             {
-                using (var context = new AppDbContext())
+                using (var context = new StudentMngContext())
                 {
                     var studentToDelete = context.Students.Find(SelectedStudent.Id);
                     if (studentToDelete != null)
@@ -184,12 +187,12 @@ public partial class StudentsViewModel : ObservableObject
 
                 // Xóa sinh viên khỏi danh sách hiển thị
                 Students.Remove(SelectedStudent);
-            FilteredStudents.Remove(SelectedStudent);
+                FilteredStudents.Remove(SelectedStudent);
             }
         }
     }
 
-    private void EditStudent()
+    private void EditStudent() //done
     {
         if (SelectedStudent != null)
         {

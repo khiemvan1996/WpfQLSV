@@ -8,7 +8,7 @@ namespace WpfQLSV.Views
         public SubjectsView(SubjectsViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = viewModel;
+            DataContext = viewModel; // Đặt DataContext là ViewModel được truyền vào
         }
     }
 }
