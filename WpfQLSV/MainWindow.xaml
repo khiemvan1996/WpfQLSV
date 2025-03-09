@@ -5,21 +5,41 @@
     <Grid>
         <!-- Cấu trúc Grid với 2 cột -->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150"/>
-            <!-- Menu trái -->
-            <ColumnDefinition Width="*"/>
-            <!-- Nội dung chính -->
+            <ColumnDefinition Width="150"/> <!-- Menu trái -->
+            <ColumnDefinition Width="*"/>   <!-- Nội dung chính -->
         </Grid.ColumnDefinitions>
 
         <!-- Menu bên trái -->
         <Border Grid.Column="0" BorderBrush="Black" BorderThickness="2">
             <StackPanel Background="White">
-                <Button Content="Tổng Quan" Height="40" Margin="5" />
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="White"/>
+                        <Setter Property="Foreground" Value="Black"/>
+                        <Setter Property="BorderBrush" Value="Black"/>
+                        <Setter Property="FontWeight" Value="Normal"/>
+                        <Style.Triggers>
+                            <!-- Khi nút được nhấn, đổi màu -->
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#999999"/> 
+                                <Setter Property="Foreground" Value="Black"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Trigger>
+                            <!-- Khi nút có focus -->
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="Background" Value="#999999"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Resources>
+
+                <Button Content="Tổng Quan" Height="40" Margin="5"/>
                 <Button Content="DS Sinh Viên" Height="40" Margin="5" Click="BtnStudents_Click"/>
                 <Button Content="Môn Học" Height="40" Margin="5" Click="BtnSubjects_Click"/>
                 <Button Content="Lớp" Height="40" Margin="5" Click="BtnClasses_Click"/>
                 <Button Content="Điểm số" Height="40" Margin="5" Click="BtnScores_Click"/>
-                <Button Content="Thống Kê" Height="40" Margin="5"/>
                 <Button Content="Cài Đặt" Height="40" Margin="5"/>
             </StackPanel>
         </Border>

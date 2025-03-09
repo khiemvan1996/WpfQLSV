@@ -1,10 +1,39 @@
 ﻿<UserControl x:Class="WpfQLSV.Views.ScoresView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:WpfQLSV.Views"
-             Height="Auto" Width="Auto">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
-        <!-- Giao diện của ClassesView -->
-        <TextBlock Text="Đây là trang quản lý Điểm số" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+
+        <!-- DataGrid hiển thị danh sách điểm -->
+        <DataGrid x:Name="ScoresDataGrid" AutoGenerateColumns="False" CanUserAddRows="False"
+                  
+          SelectedItem="{Binding SelectedScore, Mode=TwoWay}"
+          ItemsSource="{Binding FilteredScores}">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Mã SV" Binding="{Binding StudentId}" IsReadOnly="True" Width="auto"/>
+                <DataGridTextColumn Header="Họ Tên" Binding="{Binding Student.FullName}" IsReadOnly="True" Width="200"/>
+                <DataGridTextColumn Header="Thành Phần" Binding="{Binding Dtp}" Width="80"/>
+                <DataGridTextColumn Header="Giữa kỳ" Binding="{Binding Dgk}" Width="80"/>
+                <DataGridTextColumn Header="Cuối kỳ" Binding="{Binding Dck}" Width="80"/>
+            </DataGrid.Columns>
+
+            <!-- ContextMenu -->
+       
+        </DataGrid>
+
+        <!-- Chọn môn học -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
+            <TextBlock Text="Môn Học:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <ComboBox ItemsSource="{Binding Subjects}"
+                      DisplayMemberPath="SubjectName"
+                      SelectedItem="{Binding SelectedSubject}"
+                      Width="150" Margin="0,0,5,0"/>
+            <Button Content="Lưu" Command="{Binding SaveCommand}" Width="120" Margin="5,0,0,0"/>
+
+        </StackPanel>
     </Grid>
 </UserControl>

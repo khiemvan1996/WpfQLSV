@@ -12,7 +12,7 @@ public partial class Subject
     public virtual ICollection<Score> Scores { get; set; } = new List<Score>();
 
     public virtual ICollection<StudentsSubject> StudentsSubjects { get; set; } = new List<StudentsSubject>();
-         
-  
 
+
+    public int TotalStudents => StudentsSubjects.Count;
 }

@@ -10,4 +10,5 @@ public partial class Class
     public string ClassName { get; set; } = null!;
 
     public virtual ICollection<Student> Students { get; set; } = new List<Student>();
+
 }

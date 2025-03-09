@@ -9,6 +9,8 @@ using System.Linq;
 using WpfQLSV.Services;
 using ClosedXML.Excel;
 using WpfQLSV.Models;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 public partial class StudentsViewModel : ObservableObject
 {
@@ -26,6 +28,8 @@ public partial class StudentsViewModel : ObservableObject
 
     [ObservableProperty]
     private Student selectedStudent;
+
+
 
     public ICommand AddStudentCommand { get; }
     public ICommand SearchCommand { get; }
@@ -66,21 +70,49 @@ public partial class StudentsViewModel : ObservableObject
                     {
                         foreach (var row in rows)
                         {
-                            var score = new Score
-                            {
-                                StudentId = row.Cell(1).GetValue<int>(),
-                                SubjectId = row.Cell(2).GetValue<int>(),
+                            // Đọc dữ liệu từ Excel
+                            var fullName = row.Cell(1).GetValue<string>();
+                            var dateOfBirth = row.Cell(2).GetValue<DateTime>();
+                            var idClassString = row.Cell(3).GetValue<string>(); // Đọc giá trị dưới dạng chuỗi
 
+                            // Kiểm tra xem IdClass có phải là số nguyên hợp lệ không
+                            if (!int.TryParse(idClassString, out int idClass))
+                            {
+                                _messageService.ShowError($"Dữ liệu không hợp lệ tại dòng {row.RowNumber()}: IdClass phải là một số nguyên.", "Lỗi");
+                                continue; // Bỏ qua dòng này và tiếp tục với dòng tiếp theo
+                            }
+
+                            // Kiểm tra dữ liệu hợp lệ
+                            if (string.IsNullOrEmpty(fullName) || idClass <= 0)
+                            {
+                                _messageService.ShowError($"Dữ liệu không hợp lệ tại dòng {row.RowNumber()}: Tên không được trống và IdClass phải lớn hơn 0.", "Lỗi");
+                                continue; // Bỏ qua dòng này và tiếp tục với dòng tiếp theo
+                            }
+
+                            // Kiểm tra xem IdClass có tồn tại trong database không
+                            var classExists = context.Classes.Any(c => c.Id == idClass);
+                            if (!classExists)
+                            {
+                                _messageService.ShowError($"Dữ liệu không hợp lệ tại dòng {row.RowNumber()}: IdClass không tồn tại trong database.", "Lỗi");
+                                continue; // Bỏ qua dòng này và tiếp tục với dòng tiếp theo
+                            }
+
+                            // Thêm dữ liệu vào database
+                            var student = new Student
+                            {
+                                FullName = fullName,
+                                DateOfBirth = dateOfBirth,
+                                IdClass = idClass,
                             };
 
-                            context.Scores.Add(score);
+                            context.Students.Add(student);
                         }
 
                         context.SaveChanges();
                     }
                 }
 
-                LoadStudents();
+                LoadStudents(); // Cập nhật danh sách sinh viên sau khi nhập
                 _messageService.ShowMessage("Nhập dữ liệu từ Excel thành công!", "Thông báo");
             }
         }
@@ -101,18 +133,28 @@ public partial class StudentsViewModel : ObservableObject
                 {
                     var worksheet = workbook.Worksheets.Add("Students");
 
+                    // Thêm header
                     worksheet.Cell(1, 1).Value = "ID";
                     worksheet.Cell(1, 2).Value = "Họ và Tên";
                     worksheet.Cell(1, 3).Value = "Ngày Sinh";
-                    worksheet.Cell(1, 4).Value = "Mã Lớp";
+                    worksheet.Cell(1, 4).Value = "Lớp";
+                    worksheet.Cell(1, 5).Value = "Môn Học Đã Đăng Ký";
 
-                    var row = 2;
-                    foreach (var student in Students)
+                    int row = 2;
+                    foreach (var student in FilteredStudents)
                     {
                         worksheet.Cell(row, 1).Value = student.Id;
                         worksheet.Cell(row, 2).Value = student.FullName;
-                        worksheet.Cell(row, 3).Value = student.DateOfBirth;
-                        worksheet.Cell(row, 4).Value = student.IdClass;
+                        worksheet.Cell(row, 3).Value = student.DateOfBirth.ToString("d") ?? string.Empty;
+                        worksheet.Cell(row, 4).Value = student.IdClassNavigation?.ClassName ?? string.Empty;
+
+                        // Lấy danh sách môn học từ Scores
+                        var subjects = student.Scores?
+                            .Select(s => s.Subject?.SubjectName)
+                            .Where(name => !string.IsNullOrEmpty(name))
+                            .Distinct() ?? Enumerable.Empty<string>();
+                        worksheet.Cell(row, 5).Value = string.Join(", ", subjects);
+
                         row++;
                     }
 
@@ -126,8 +168,12 @@ public partial class StudentsViewModel : ObservableObject
         {
             _messageService.ShowError($"Lỗi khi xuất dữ liệu ra Excel: {ex.Message}", "Lỗi");
         }
-    }// done
+    }
 
+
+
+    // done
+    
     public void LoadStudents()
     {
         using (var context = new StudentMngContext())
@@ -141,6 +187,7 @@ public partial class StudentsViewModel : ObservableObject
             Students = new ObservableCollection<Student>(studentList);
             FilteredStudents = new ObservableCollection<Student>(studentList);
         }
+  
     } //done
 
     private void OpenAddStudentWindow()
